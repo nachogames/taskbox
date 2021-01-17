@@ -1,57 +1,24 @@
 <template>
-  <div class="list-items">
-    <template v-if="loading">
-      <div v-for="index in 6" :key="index" class="loading-item">
-        <span class="glow-checkbox"></span>
-        <span class="glow-text">
-          <span>Loading</span> <span>cool</span> <span>state</span>
-        </span>
-      </div>
-    </template>
-    <template v-else-if="isEmpty">
-      <div class="wrapper-message">
-        <span class="icon-check"></span>
-        <div class="title-message">You have no tasks</div>
-        <div class="subtitle-message">Sit back and relax</div>
-      </div>
-    </template>
-    <template v-else>
-      <Task
-        v-for="task in tasksInOrder"
-        :key="task.id"
-        :task="task"
-        v-on="$listeners"
-      />
-    </template>
+  <div>
+    <pure-task-list
+      :tasks="tasks"
+      v-on="$listeners"
+      @archive-task="archiveTask"
+      @pin-task="pinTask"
+    />
   </div>
 </template>
 
 <script>
-import Task from "./Task";
+import PureTaskList from "./PureTaskList.vue";
+import { mapState, mapActions } from "vuex";
 export default {
-  name: "TaskList",
-  components: { Task },
-  props: {
-    tasks: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-    loading: {
-      type: Boolean,
-      default: false,
-    },
-  },
+  components: { PureTaskList },
   computed: {
-    tasksInOrder() {
-      return [
-        ...this.tasks.filter((t) => t.state === "TASK_PINNED"),
-        ...this.tasks.filter((t) => t.state !== "TASK_PINNED"),
-      ];
-    },
-    isEmpty() {
-      return this.tasks.length === 0;
-    },
+    ...mapState(["tasks"]),
+  },
+  methods: {
+    ...mapActions(["archiveTask", "pinTask"]),
   },
 };
 </script>
